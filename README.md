@@ -5,7 +5,8 @@
 - [ ] Проверить видео парня
 - [ ] Вспомнить толмут 
 - [ ] Построить карту
-- [ ] Slam 
+- [ ] Slam
+https://github.com/sieuwe1/PS4-eye-camera-for-linux-with-python-and-OpenCV
 ## Робот
 ### Физическая часть
 ?
