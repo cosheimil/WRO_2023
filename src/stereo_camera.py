@@ -22,7 +22,7 @@ def main():
         disparity = stereo.compute(video_l, video_r)
         plt.imshow(disparity)
         plt.imshow(video_l)
-        plt.show()
+        plt.show() # test
 
         # cv.imshow("Right", video_r)
         if cv.waitKey(1) & 0xFF == ord('q'):
