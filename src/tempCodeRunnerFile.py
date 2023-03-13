@@ -1,0 +1,1 @@
+video_l, video_r = frame[:]
