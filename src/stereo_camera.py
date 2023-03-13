@@ -18,9 +18,10 @@ def main():
         # cv.imshow("Left", video_l)
         # cv.imshow("Right", video_r)
 
-        stereo = cv.StereoBM_create(numDisparities=16, blockSize=9)
+        stereo = cv.StereoBM_create(numDisparities=16, blockSize=17)
         disparity = stereo.compute(video_l, video_r)
-        plt.imshow(disparity,'gray')
+        plt.imshow(disparity)
+        plt.imshow(video_l)
         plt.show()
 
         # cv.imshow("Right", video_r)
