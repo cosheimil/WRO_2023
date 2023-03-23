@@ -23,7 +23,7 @@ image_counts = 1
 def main():
     scan = False
     count = 0
-    while count <= image_counts:
+    while count < image_counts:
 
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
@@ -68,15 +68,19 @@ def main():
                 img_ptsR.append(cornersR)
 
                 # left_camera
+                # print(video_l.shape)
                 print('Left Camera')
                 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(obj_pts, img_ptsL,
-                    video_l.shape[::-1], None, None)
-                print(ret, mtx, dist, rvecs, tvecs)
+                    video_l.shape[:2], None, None)
+                print('Left camera matrix:')
+                print(mtx)
                 # right camera
                 print('Right Camera')
                 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(obj_pts, img_ptsR, 
-                    video_r.shape[::-1], None, None)
-                print(ret, mtx, dist, rvecs, tvecs)
+                    video_r.shape[:2], None, None)
+
+                print('Left camera matrix:')
+                print(mtx)
 
         cv.imshow("cornersR", video_r)
         cv.imshow("cornersL", video_l)
