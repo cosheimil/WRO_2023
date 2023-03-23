@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 
 class PS5_Cam():
@@ -36,7 +36,7 @@ class PS5_Cam():
 
     def read_color(self):
         ret, frame = self.video_capture.read()
-        video_l, video_r = frame[:, :self._delemiter], frame[:, self._delemiter:]
+        video_r, video_l = frame[:, :self._delemiter], frame[:, self._delemiter:]
 
         return video_l, video_r
     
@@ -53,10 +53,10 @@ class PS5_Cam():
         self.video_capture.release()
 
 def main():
-    ps_cam = PS5_Cam()
+    ps_cam = PS5_Cam(3)
 
     while True:
-        l, r = ps_cam.read_gray()
+        l, r = ps_cam.read_color()
         cv.imshow("Left", l)
         cv.imshow("Right", r)
 
