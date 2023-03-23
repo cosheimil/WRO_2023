@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 # Check for left and right camera IDs
 # These values can change depending on the system
@@ -24,20 +25,20 @@ def nothing(x):
     pass
 
 
-cv2.namedWindow("disp", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("disp", 1000, 1000)
+cv2.namedWindow("depth", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("depth", 1000, 1000)
 
-cv2.createTrackbar("numDisparities", "disp", 1, 17, nothing)
-cv2.createTrackbar("blockSize", "disp", 1, 50, nothing)
-cv2.createTrackbar("preFilterType", "disp", 1, 1, nothing)
-cv2.createTrackbar("preFilterSize", "disp", 1, 25, nothing)
-cv2.createTrackbar("preFilterCap", "disp", 1, 62, nothing)
-cv2.createTrackbar("textureThreshold", "disp", 1, 100, nothing)
-cv2.createTrackbar("uniquenessRatio", "disp", 1, 100, nothing)
-cv2.createTrackbar("speckleRange", "disp", 0, 100, nothing)
-cv2.createTrackbar("speckleWindowSize", "disp", 1, 25, nothing)
-cv2.createTrackbar("disp12MaxDiff", "disp", 1, 25, nothing)
-cv2.createTrackbar("minDisparity", "disp", 1, 25, nothing)
+cv2.createTrackbar("numDisparities", "depth", 1, 17, nothing)
+cv2.createTrackbar("blockSize", "depth", 1, 50, nothing)
+cv2.createTrackbar("preFilterType", "depth", 1, 1, nothing)
+cv2.createTrackbar("preFilterSize", "depth", 1, 25, nothing)
+cv2.createTrackbar("preFilterCap", "depth", 1, 62, nothing)
+cv2.createTrackbar("textureThreshold", "depth", 1, 100, nothing)
+cv2.createTrackbar("uniquenessRatio", "depth", 1, 100, nothing)
+cv2.createTrackbar("speckleRange", "depth", 0, 100, nothing)
+cv2.createTrackbar("speckleWindowSize", "depth", 1, 25, nothing)
+cv2.createTrackbar("disp12MaxDiff", "depth", 1, 25, nothing)
+cv2.createTrackbar("minDisparity", "depth", 1, 25, nothing)
 
 # Creating an object of StereoBM algorithm
 stereo = cv2.StereoBM_create()
@@ -76,22 +77,22 @@ while True:
         # cv2.imshow('Right', Right_nice)
         # cv2.imshow('Left', Left_nice)
         # Updating the parameters based on the trackbar positions
-        # numDisparities = cv2.getTrackbarPos("numDisparities", "disp") * 16
-        numDisparities = 160
-        blockSize = cv2.getTrackbarPos("blockSize", "disp") * 2 + 5
-        preFilterType = cv2.getTrackbarPos("preFilterType", "disp")
-        preFilterSize = cv2.getTrackbarPos("preFilterSize", "disp") * 2 + 5
-        preFilterCap = cv2.getTrackbarPos("preFilterCap", "disp")
-        textureThreshold = cv2.getTrackbarPos("textureThreshold", "disp")
-        uniquenessRatio = cv2.getTrackbarPos("uniquenessRatio", "disp")
-        speckleRange = cv2.getTrackbarPos("speckleRange", "disp")
-        speckleWindowSize = cv2.getTrackbarPos("speckleWindowSize", "disp") * 2
-        disp12MaxDiff = cv2.getTrackbarPos("disp12MaxDiff", "disp")
-        # minDisparity = cv2.getTrackbarPos("minDisparity", "disp")
-        minDisparity = 0
+        numDisparities = cv2.getTrackbarPos("numDisparities", "depth") * 16
+        # numDisparities = 160
+        blockSize = cv2.getTrackbarPos("blockSize", "depth") * 2 + 5
+        preFilterType = cv2.getTrackbarPos("preFilterType", "depth")
+        preFilterSize = cv2.getTrackbarPos("preFilterSize", "depth") * 2 + 5
+        preFilterCap = cv2.getTrackbarPos("preFilterCap", "depth")
+        textureThreshold = cv2.getTrackbarPos("textureThreshold", "depth")
+        uniquenessRatio = cv2.getTrackbarPos("uniquenessRatio", "depth")
+        speckleRange = cv2.getTrackbarPos("speckleRange", "depth")
+        speckleWindowSize = cv2.getTrackbarPos("speckleWindowSize", "depth") * 2
+        disp12MaxDiff = cv2.getTrackbarPos("disp12MaxDiff", "depth")
+        minDisparity = cv2.getTrackbarPos("minDisparity", "depth")
+        # minDisparity = 0
 
         # Setting the updated parameters before computing disparity map
-        stereo.setNumDisparities(numDisparities + 16)
+        stereo.setNumDisparities(numDisparities)
         stereo.setBlockSize(blockSize)
         stereo.setPreFilterType(preFilterType)
         stereo.setPreFilterSize(preFilterSize)
@@ -112,14 +113,24 @@ while True:
         # Converting to float32
         disparity = disparity.astype(np.float32)
 
-        # Scaling down the disparity values and normalizing them
-        disparity = (disparity / 16.0 - minDisparity) / numDisparities
-        print(disparity.shape)
+        # # Scaling down the disparity values and normalizing them
+        # disparity = (disparity / 16.0 - minDisparity) / numDisparities
+        # print(disparity.shape)
         # Displaying the disparity map
-        cv2.imshow("disp", disparity)
-
+        f = 30
+        b = 70
+        depth = f*b / disparity
+        cv2.imshow("depth", depth)
+        
         # Close window using esc key
         if cv2.waitKey(1) == 27:
+            import matplotlib.pyplot as plt
+
+            plt.contourf(disparity, levels=100)
+            plt.colorbar()
+            plt.savefig('depth.jpg')
+            with open('depth.txt', 'w') as f:
+                print(disparity, file=f)
             break
         
     else:

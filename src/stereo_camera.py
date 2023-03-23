@@ -3,36 +3,79 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def main():
-    cap = cv.VideoCapture(2, cv.CAP_V4L)
+class PS5_Cam():
+    width = 1280
+    height = 376
+    fps = 120
+    _delemiter = width // 2
+    video_capture = None
 
-    cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv.CAP_PROP_FRAME_HEIGHT, 376)
-    cap.set(cv.CAP_PROP_FPS, 120)
+    def __init__(self, *args, **kwargs):
+        self.video_capture = cv.VideoCapture(args[0], cv.CAP_V4L)
 
-    while True:
-        ret, frame = cap.read()
-        video_l, video_r = frame[:, :640], frame[:, 640:]
+        self.video_capture.set(cv.CAP_PROP_FRAME_WIDTH, self.width)
+        self.video_capture.set(cv.CAP_PROP_FRAME_HEIGHT, self.height)
+        self.video_capture.set(cv.CAP_PROP_FPS, self.fps)
+
+
+    def set_fps(self, fps):
+        self.fps = fps
+        self.video_capture.set(cv.CAP_PROP_FPS, fps)
+
+    
+    def set_height(self, height):
+        self.height = height
+        self.video_capture.set(cv.CAP_PROP_FRAME_HEIGHT, height)
+
+
+    def set_width(self, width):
+        self.width = width
+        self._delemiter = width // 2
+        self.video_capture.set(cv.CAP_PROP_FRAME_WIDTH, width)
+
+
+    def read_color(self):
+        ret, frame = self.video_capture.read()
+        video_l, video_r = frame[:, :self._delemiter], frame[:, self._delemiter:]
+
+        return video_l, video_r
+    
+
+    def read_gray(self):
+        video_l, video_r = self.read_color()
         video_l = cv.cvtColor(video_l, cv.COLOR_BGR2GRAY)
         video_r = cv.cvtColor(video_r, cv.COLOR_BGR2GRAY)
-        # cv.imshow("Left", video_l)
-        # cv.imshow("Right", video_r)
 
-        stereo = cv.StereoBM_create(numDisparities=16, blockSize=5)
-        disparity = stereo.compute(video_l, video_r)
-        plt.imshow(disparity)
-        plt.imshow(video_l)
-        plt.colorbar()
-        plt.show() # test
+        return video_l, video_r
 
-        # cv.imshow("Right", video_r)
+
+    def release(self):
+        self.video_capture.release()
+
+def main():
+    ps_cam = PS5_Cam()
+
+    while True:
+        l, r = ps_cam.read_gray()
+        cv.imshow("Left", l)
+        cv.imshow("Right", r)
+
+        # stereo = cv.StereoBM_create(numDisparities=16, blockSize=5)
+        # disparity = stereo.compute(video_l, video_r)
+        # plt.imshow(disparity)
+        # plt.imshow(video_l)
+        # plt.colorbar()
+        # plt.show() # test
+
+        # # cv.imshow("Right", video_r)
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
 
     # After the loop release the cap object
-    cap.release()
+    ps_cam.release()
     # Destroy all the windows
     cv.destroyAllWindows()
+    return 0
 
 
 if __name__ == '__main__':
