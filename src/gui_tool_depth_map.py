@@ -1,6 +1,6 @@
-import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Check for left and right camera IDs
 # These values can change depending on the system
@@ -13,7 +13,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 cap.set(cv2.CAP_PROP_FPS, 120)
 
 # Reading the mapping values for stereo image rectification
-cv_file = cv2.FileStorage('./src/data/params.xml', cv2.FILE_STORAGE_READ)
+cv_file = cv2.FileStorage("./src/data/params.xml", cv2.FILE_STORAGE_READ)
 Left_Stereo_Map_x = cv_file.getNode("Left_Stereo_Map_x").mat()
 Left_Stereo_Map_y = cv_file.getNode("Left_Stereo_Map_y").mat()
 Right_Stereo_Map_x = cv_file.getNode("Right_Stereo_Map_x").mat()
@@ -72,7 +72,7 @@ while True:
             cv2.BORDER_CONSTANT,
             0,
         )
-        
+
         Right_nice, Left_nice = imgR_gray, imgL_gray
         # cv2.imshow('Right', Right_nice)
         # cv2.imshow('Left', Left_nice)
@@ -119,19 +119,19 @@ while True:
         # Displaying the disparity map
         f = 30
         b = 70
-        depth = f*b / disparity
+        depth = f * b / disparity
         cv2.imshow("depth", depth)
-        
+
         # Close window using esc key
         if cv2.waitKey(1) == 27:
             import matplotlib.pyplot as plt
 
             plt.contourf(disparity, levels=100)
             plt.colorbar()
-            plt.savefig('depth.jpg')
-            with open('depth.txt', 'w') as f:
+            plt.savefig("depth.jpg")
+            with open("depth.txt", "w") as f:
                 print(disparity, file=f)
             break
-        
+
     else:
         ...
