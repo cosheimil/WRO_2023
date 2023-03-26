@@ -1,6 +1,4 @@
-%YAML:1.0
----
-K: !!opencv-matrix
+K:
   rows: 3
   cols: 3
   dt: d
@@ -16,7 +14,7 @@ K: !!opencv-matrix
       0.,
       1.,
     ]
-D: !!opencv-matrix
+D:
   rows: 1
   cols: 5
   dt: d
