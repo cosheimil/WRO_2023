@@ -69,7 +69,3 @@ class PS5_Modes(object):
         self.hd = ((1280, 800), 60)
         self.k = ((2560, 800), 60)
         self.default = ((1280, 376), 120)
-
-
-a = PS5_Camera(2, "fhd")
-print(a)
