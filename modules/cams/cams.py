@@ -33,12 +33,14 @@ class PS5_Camera(object):
 
     @get_mode.setter
     def set_mode(self, mode: str):
-        """Set the camera mode
+        """Set the camera mode.
 
         Args:
+        ----
             mode (str): _description_
 
         Raises:
+        ------
             ValueError: _description_
         """
         if mode in self._valid_modes:
@@ -50,12 +52,14 @@ class PS5_Camera(object):
             raise ValueError(f"Not permitted mode! Given: {mode}")
 
     def get_frame(self) -> np.ndarray:
-        """Get colored frame from PS5 Camera
+        """Get colored frame from PS5 Camera.
 
-        Raises:
+        Raises
+        ------
             ValueError: Error while reading frame. Incorrect Camera Index
 
-        Returns:
+        Returns
+        -------
             np.ndarray: image in BGR
         """
         ret, frame = self.video_capture.read()
@@ -67,12 +71,14 @@ class PS5_Camera(object):
             )
 
     def get_frame_gray(self) -> np.ndarray:
-        """Get gray frame from PS5 Camera
+        """Get gray frame from PS5 Camera.
 
-        Raises:
+        Raises
+        ------
             ValueError: Error while reading frame. Incorrect Camera Index
 
-        Returns:
+        Returns
+        -------
             np.ndarray: image in gray
         """
         try:
@@ -85,9 +91,10 @@ class PS5_Camera(object):
             )
 
     def view_frame(self):
-        """View colored frame from PS5 Cam
+        """View colored frame from PS5 Cam.
 
-        Raises:
+        Raises
+        ------
             ValueError: Error while reading frame. Incorrect Camera Index
         """
         try:
@@ -99,9 +106,10 @@ class PS5_Camera(object):
             )
 
     def view_frame_gray(self):
-        """Get gray frame from PS5 Camera
+        """Get gray frame from PS5 Camera.
 
-        Raises:
+        Raises
+        ------
             ValueError: Error while reading frame. Incorrect Camera Index
         """
         try:
@@ -113,9 +121,10 @@ class PS5_Camera(object):
             )
 
     def view_video(self):
-        """Get colored video from PS5 Camera
+        """Get colored video from PS5 Camera.
 
-        Raises:
+        Raises
+        ------
             ValueError: Error while reading frame. Incorrect Camera Index
         """
         try:
@@ -134,9 +143,10 @@ class PS5_Camera(object):
         self.realese_camera()
 
     def view_video_gray(self):
-        """Get gray video from PS5 Camera
+        """Get gray video from PS5 Camera.
 
-        Raises:
+        Raises
+        ------
             ValueError: Error while reading frame. Incorrect Camera Index
         """
         try:
