@@ -7,7 +7,6 @@ from pathlib import Path
 import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
-
 from stereo_camera import PS5_Cam
 
 

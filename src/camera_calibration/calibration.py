@@ -5,6 +5,8 @@ import numpy as np
 
 
 class ChessboardFinder(object):
+    rows, columns = 0, 0
+
     def _get_corners(self, image):
         """Find subpixel chessboard corners in image."""
         temp = image
@@ -19,11 +21,11 @@ class ChessboardFinder(object):
         cv.cornerSubPix(temp, corners, (11, 11), (-1, -1), self.criteria)
         return corners
 
-    def _show_corners(self, image, corners):
+    def _show_corners(self, image, window_name="Chessboard"):
         """Show chessboard corners found in image."""
         temp = image
+        corners = self._get_corners(image)
         cv.drawChessboardCorners(temp, (self.rows, self.columns), corners, True)
-        window_name = "Chessboard"
         cv.imshow(window_name, temp)
         if cv.waitKey(0):
             cv.destroyWindow(window_name)
