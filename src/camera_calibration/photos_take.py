@@ -1,3 +1,4 @@
+import os
 import cv2 as cv
 
 from camera_calibration.calibration import ChessboardFinder
@@ -5,35 +6,51 @@ from stereo_vision.camera import StereoCam
 
 
 class CameraChessboardSaver(StereoCam, ChessboardFinder):
-    def __init__(self, video_capture, mode, path: str):
+    def __init__(self, video_capture, mode, path: str, rows, columns):
         super().__init__(video_capture, mode)
-        self.path = path
+        self.path = f"images/{path}"
+        self.rows = rows
+        self.columns = columns
+        self.criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-    def show_frames(self, rectify=False, wait=0):
-        left, right = self.get_frames()
-        ret = True
-        try:
-            self._show_corners(left, "left")
-        except:
-            cv.imshow("left", left)
-            ret = False
-        try:
-            self._show_corners(right, "right")
-        except:
-            cv.imshow("right", right)
-            ret = False
-
-        cv.waitKey(wait)
-        for window in self.windows:
-            cv.destroyWindow(window)
-        return ret
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
 
     def show_videos(self):
-        c = 0
-        while True:
-            ret = self.show_frames(wait=1)
-            if cv.waitKey(1) == ord("a") and ret:
-                cv.imwrite(f"{c}", self.get_raw_frame())
+        c = 9
+        while True:            
+            key = cv.waitKey(1)
+
+            frame = self.get_raw_frame()
+            if key == ord("a"):
+                # frame = self.get_raw_frame_gray()
+
+                # frames = [frame[:, : self._delemiter], frame[:, self._delemiter :]]
+
+                # cont = False
+                # try:
+                #     print("Findind corners left...")
+                #     self._show_corners(frames[0], window_name="left")
+                # except:
+                #     print("Havent found left")
+                #     cont = True
+
+                # try:
+                #     print("Findind corners right...")
+                #     self._show_corners(frames[1], window_name="right")
+                # except:
+                #     print("Havent found right")
+                #     cont = True
+
+                # if cont:
+                #     continue
+
+                # if cv.waitKey(0) == ord("y"):
+                print(f"saved: {c}")
+                cv.imwrite(f"{self.path}/raw_image_{c}.png", self.get_raw_frame())
                 c += 1
-            elif cv.waitKey(1) == ord("q"):
+
+            elif key == ord("q"):
                 break
+            else:
+                cv.imshow("ps5", frame)

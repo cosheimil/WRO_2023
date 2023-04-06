@@ -80,6 +80,11 @@ class StereoCam:
         ret, frame = self.video_capture.read()
         return frame
 
+    def get_raw_frame_gray(self):
+        frame = self.get_raw_frame()
+
+        return cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
     def get_frames(self, rectify=False):
         """Read color frames from camera.
 
@@ -118,8 +123,20 @@ class StereoCam:
         for window, frame in zip(self.windows, self.get_frames(rectify)):
             cv.imshow(window, frame)
         cv.waitKey(wait)
-        for window in self.windows:
-            cv.destroyWindow(window)
+        # for window in self.windows:
+        #     cv.destroyWindow(window)
+
+    def show_frames_gray(self, rectify=False, wait=0):
+        """
+        Show current frames from cameras.
+
+        ``wait`` is the wait interval in milliseconds before the window closes.
+        """
+        for window, frame in zip(self.windows, self.get_frames_gray(rectify)):
+            cv.imshow(window, frame)
+        cv.waitKey(wait)
+        # for window in self.windows:
+        #     cv.destroyWindow(window)
 
     def show_videos(self):
         """Show video from cameras."""
@@ -146,7 +163,7 @@ class StereoCam:
 
 class File_Cam(StereoCam):
     img_names = []
-    img_pointer = 0
+    _img_pointer = 0
 
     def __init__(
         self, dir_path, img_format="jpg", calibration=None, block_matcher=None
@@ -157,27 +174,30 @@ class File_Cam(StereoCam):
 
         assert not frame_sizes or frame_sizes.count(frame_sizes[0]) == len(frame_sizes)
 
-        self.frame_size = frame_sizes[0]
+        self._frame_size = frame_sizes[0]
+
+        self._delemiter = frame_sizes[0][1]//2
 
         self.calibration = calibration
         self.block_matcher = block_matcher
 
     @property
     def img_pointer(self):
-        return self.img_pointer
+        return self._img_pointer
 
     @img_pointer.setter
     def img_pointer(self, value):
-        self.img_pointer = (value) % len(self.img_names)
+        self._img_pointer = (value) % len(self.img_names)
 
     def get_raw_frame(self):
         frame = cv.imread(self.img_names[self.img_pointer])
         return frame
 
     def get_frames(self, rectify=False):
-        frame = cv.imread(self.img_names[self.img_pointer])
-        frames = list(frame[:, : self._delemiter, :], frame[:, self._delemiter :, :])
-
+        frame = self.get_raw_frame()
+        
+        frames = [frame[:, : self._delemiter, :], frame[:, self._delemiter :, :]]
+        
         if rectify and self.calibration is not None:
             frames = self.calibration.rectify(frames)
 
@@ -185,9 +205,8 @@ class File_Cam(StereoCam):
 
     def calibrateSingle(self, side, chess_pattern, dir_name, show_results=False):
         calibrator = CameraCalibrator(
-            rows=chess_pattern[0],
-            columns=chess_pattern[1],
-            square_size=chess_pattern[2],
+            pattern_size=chess_pattern[0],
+            square_size=chess_pattern[1],
             image_size=self.frame_size,
         )
 
@@ -195,48 +214,55 @@ class File_Cam(StereoCam):
             frame = None
             self.img_pointer = i
             if side == "left":
-                frame = self.get_frames_gray()[0]
+                frame = self.get_frames()[0]
             elif side == "right":
-                frame = self.get_frames_gray()[1]
+                frame = self.get_frames()[1]
 
             try:
                 calibrator.add_corners(frame, show_results)
             except ChessboardNotFoundError:
                 print(f"{i}: {self.img_names[i]} - can not find board!")
-                self.show_frames()
+                # self.show_frames()
+                # if frame.ndim == 3:
+                    # frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+                # cv.imshow(side, frame)
+                # cv.waitKey(0)
             else:
                 print(f"{i}: {self.img_names[i]} - have found board!")
 
         calibration = calibrator.calibrate_camera()
-        avg_error = self.calibration.rmse
+        avg_error = calibration.rmse
 
-        # TODO: Нормально передавать папку для конфига, как параметр целиком
-        calibration.export(Path(__file__).parent.parent / f"./config/{dir_name}")
+        # # TODO: Нормально передавать папку для конфига, как параметр целиком
+        calibration.export(Path(__file__).parent / f"./config/{dir_name}")
         return avg_error, calibration
 
-    def calibrateStereo(self, chess_pattern, dir_name, show_results=False):
+    def calibrateStereo(self, chess_pattern, dir_name, single_calibrations, show_results=False):
         calibrator = StereoCalibrator(
-            rows=chess_pattern[0],
-            columns=chess_pattern[1],
-            square_size=chess_pattern[2],
+            rows=chess_pattern[0][0],
+            columns=chess_pattern[0][1],
+            square_size=chess_pattern[1],
             image_size=self.frame_size,
+            cam_calib_left=single_calibrations[0],
+            cam_calib_right=single_calibrations[1],
         )
 
-        for i in range(len(self.left_images)):
+        for i in range(len(self.img_names)):
+            self.img_pointer = i
             try:
                 calibrator.add_corners(self.get_frames_gray(), show_results)
             except ChessboardNotFoundError:
-                print(f"{i}: {self.left_images[i]} - can not find board!")
-                self.show_frames()
+                print(f"{i}: images: {i} - can not find board!")
+                # self.show_frames()
             else:
-                print(f"{i}: {self.left_images[i]} - have found board!")
+                print(f"{i}: images: {i} - have found board!")
 
         self.calibration = calibrator.calibrate_cameras()
         avg_error = calibrator.check_calibration(self.calibration)
 
         # TODO: Нормально передавать папку для конфига, как параметр целиком
-        self.calibration.export(Path(__file__).parent.parent / f"./config/{dir_name}")
-        return avg_error
+        self.calibration.export(dir_name)
+        return avg_error, self.calibration
 
 
 class PS5CameraModes(enum.Enum):

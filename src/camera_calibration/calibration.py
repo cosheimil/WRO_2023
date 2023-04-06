@@ -6,6 +6,7 @@ import numpy as np
 
 class ChessboardFinder(object):
     rows, columns = 0, 0
+    # criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
     def _get_corners(self, image):
         """Find subpixel chessboard corners in image."""
@@ -24,6 +25,7 @@ class ChessboardFinder(object):
     def _show_corners(self, image, window_name="Chessboard"):
         """Show chessboard corners found in image."""
         temp = image
+        
         corners = self._get_corners(image)
         cv.drawChessboardCorners(temp, (self.rows, self.columns), corners, True)
         cv.imshow(window_name, temp)
@@ -75,6 +77,7 @@ class Calibration(object):
 
     def export(self, output_folder):
         """Export matrices as ``*.npy`` files to an output folder."""
+        print(f'Saving: {output_folder}')
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         self._interact_with_folder(output_folder, "w")
@@ -96,14 +99,21 @@ class CameraCalibration(Calibration):
 
 class CameraCalibrator(ChessboardFinder):
     def add_corners(self, image, show_results=False):
+        # img_size = [self.image_size[0] * 2, (self.image_size[1] // 2 )* 2]
+
+        # resized = image
+        # img_size = img_size[::-1]
+        # print(self.image_size, img_size)
+        # resized = cv.resize(image, img_size, interpolation=cv.INTER_LINEAR)
         try:
-            corners = self._get_corners(image)
+            corners = self._get_corners(resized)
+            # map(lambda x: x / 2, corners)
         except ChessboardNotFoundError:
             raise ChessboardNotFoundError("No chessboard could be found.")
             return
 
         if show_results:
-            self._show_corners(image, corners)
+            self._show_corners(resized)
 
         self.image_count += 1
         self.image_points.append(corners.reshape(-1, 2))
@@ -219,6 +229,7 @@ class StereoCalibrator(ChessboardFinder):
         """
         side = "left"
 
+        corners_dict = {"left": None, "right": None}
         for image in image_pair:
             try:
                 corners = self._get_corners(image)
@@ -229,11 +240,15 @@ class StereoCalibrator(ChessboardFinder):
             if show_results:
                 self._show_corners(image, corners)
 
-            self.image_points[side].append(corners.reshape(-1, 2))
+            corners_dict[side] = corners.reshape(-1, 2)
+            
             side = "right"
-            self.image_count += 1
+
+        for side in ["left", "right"]:
+            self.image_points[side].append(corners_dict[side])
 
         self.object_points.append(self.corner_coordinates)
+        self.image_count += 1
 
     def __init__(
         self,
@@ -293,10 +308,14 @@ class StereoCalibrator(ChessboardFinder):
         sides = ["left", "right"]
 
         for side in sides:
-            calib.cam_mats[side] = self.cameras_calibration[side]
+            calib.cam_mats[side] = self.cameras_calibration[side].mtx
 
         stereocalibration_flags = cv.CALIB_FIX_INTRINSIC
 
+
+        print( len(self.object_points),
+            len(self.image_points["left"]),
+            len(self.image_points["right"]))
         (
             calib.rmse,
             calib.cam_mats["left"],
