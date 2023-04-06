@@ -101,7 +101,7 @@ class CameraCalibrator(ChessboardFinder):
     def add_corners(self, image, show_results=False):
         # img_size = [self.image_size[0] * 2, (self.image_size[1] // 2 )* 2]
 
-        # resized = image
+        resized = image
         # img_size = img_size[::-1]
         # print(self.image_size, img_size)
         # resized = cv.resize(image, img_size, interpolation=cv.INTER_LINEAR)

@@ -2,6 +2,7 @@ import enum
 from glob import glob
 from itertools import cycle
 from pathlib import Path
+import os
 
 import cv2 as cv
 
@@ -210,6 +211,7 @@ class File_Cam(StereoCam):
             image_size=self.frame_size,
         )
 
+        indexes_removing = []
         for i in range(len(self.img_names)):
             frame = None
             self.img_pointer = i
@@ -222,6 +224,7 @@ class File_Cam(StereoCam):
                 calibrator.add_corners(frame, show_results)
             except ChessboardNotFoundError:
                 print(f"{i}: {self.img_names[i]} - can not find board!")
+                indexes_removing.append(i)
                 # self.show_frames()
                 # if frame.ndim == 3:
                     # frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -229,7 +232,10 @@ class File_Cam(StereoCam):
                 # cv.waitKey(0)
             else:
                 print(f"{i}: {self.img_names[i]} - have found board!")
-
+        
+        for index in indexes_removing:
+            os.remove(self.img_names[index])
+        
         calibration = calibrator.calibrate_camera()
         avg_error = calibration.rmse
 
