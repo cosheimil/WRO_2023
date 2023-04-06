@@ -204,15 +204,20 @@ class StereoCalibration(Calibration):
         Remapping is done with nearest neighbor for speed.
         """
         new_frames = []
+        
         for i, side in enumerate(("left", "right")):
             new_frames.append(
                 cv.remap(
                     frames[i],
-                    self.undistortion_map[side],
-                    self.rectification_map[side],
-                    cv.INTER_NEAREST,
+                    map1=self.undistortion_map[side],
+                    map2=self.rectification_map[side],
+                    interpolation=cv.INTER_NEAREST,
                 )
             )
+            print(self.undistortion_map[side].shape,
+                    self.rectification_map[side].shape,
+                    frames[i].shape,
+                    new_frames[i].shape)
         return new_frames
 
 
@@ -258,7 +263,7 @@ class StereoCalibrator(ChessboardFinder):
         image_size,
         cam_calib_left=None,
         cam_calib_right=None,
-        alpha=-1,
+        alpha=-1.0,
     ):
         """
         Store variables relevant to the camera calibration.
@@ -312,6 +317,8 @@ class StereoCalibrator(ChessboardFinder):
 
         stereocalibration_flags = cv.CALIB_FIX_INTRINSIC
 
+        stereo_rectify_flags = 0
+        # stereo_rectify_flags = cv.CALIB_ZERO_DISPARITY
 
         print( len(self.object_points),
             len(self.image_points["left"]),
@@ -339,6 +346,7 @@ class StereoCalibrator(ChessboardFinder):
             flags=stereocalibration_flags,
         )
 
+        print(f"alpha: {self.alpha}")
         (
             calib.rect_trans["left"],
             calib.rect_trans["right"],
@@ -356,7 +364,7 @@ class StereoCalibrator(ChessboardFinder):
             calib.rot_mat,
             calib.trans_vec,
             alpha=self.alpha,
-            flags=0,
+            flags=stereo_rectify_flags,
         )
 
         for side in ("left", "right"):

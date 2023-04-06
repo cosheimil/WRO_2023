@@ -205,10 +205,11 @@ class File_Cam(StereoCam):
         return frames
 
     def calibrateSingle(self, side, chess_pattern, dir_name, show_results=False):
+        single_frame_size = [self._delemiter, self.frame_size[0]]
         calibrator = CameraCalibrator(
             pattern_size=chess_pattern[0],
             square_size=chess_pattern[1],
-            image_size=self.frame_size,
+            image_size=single_frame_size,
         )
 
         indexes_removing = []
@@ -240,17 +241,19 @@ class File_Cam(StereoCam):
         avg_error = calibration.rmse
 
         # # TODO: Нормально передавать папку для конфига, как параметр целиком
-        calibration.export(Path(__file__).parent / f"./config/{dir_name}")
+        calibration.export(dir_name)
         return avg_error, calibration
 
     def calibrateStereo(self, chess_pattern, dir_name, single_calibrations, show_results=False):
+        single_frame_size = [self._delemiter, self.frame_size[0]]
         calibrator = StereoCalibrator(
             rows=chess_pattern[0][0],
             columns=chess_pattern[0][1],
             square_size=chess_pattern[1],
-            image_size=self.frame_size,
+            image_size=single_frame_size,
             cam_calib_left=single_calibrations[0],
             cam_calib_right=single_calibrations[1],
+            alpha=-1.0,
         )
 
         for i in range(len(self.img_names)):

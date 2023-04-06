@@ -21,15 +21,26 @@ def main():
 
     # stereo_calib = StereoCalibration(input_folder=config_dir("ps5_1_stereo"))
 
-    e_l, calib_left = f_cam.calibrateSingle("left", chess_pattern, dir_name="ps5_1_left", show_results=True)
-    # e_r, calib_right = f_cam.calibrateSingle("right", chess_pattern, dir_name="ps5_1_right", show_results=False)
+
+    f_cam.img_names = f_cam.img_names[:5]
+
+    # e_l, calib_left = f_cam.calibrateSingle("left", chess_pattern, dir_name=config_dir("ps5_1_left"), show_results=False)
+    # e_r, calib_right = f_cam.calibrateSingle("right", chess_pattern, dir_name=config_dir("ps5_1_right"), show_results=False)
     print(f"Calibrated!\ne_l: {calib_left.rmse} | e_r: {calib_right.rmse}")
 
-    # avg_error, stereo_calib = f_cam.calibrateStereo(chess_pattern, dir_name=config_dir("ps5_1_stereo"), single_calibrations=[calib_left, calib_right])
+    # f_cam.img_names = f_cam.img_names[:1]
+    avg_error, stereo_calib = f_cam.calibrateStereo(chess_pattern, dir_name=config_dir("ps5_1_stereo"), single_calibrations=[calib_left, calib_right])
 
-    # print(f"Calibrated Stereo!\nrmse: {stereo_calib.rmse}")
+    print(f"Calibrated Stereo!\nrmse: {stereo_calib.rmse}")
 
-    # print(avg_error)
+    print(avg_error)
+
+    f_cam.calibration = stereo_calib
+
+    for i in range(len(f_cam.img_names)):
+        f_cam.img_pointer = i
+        f_cam.show_frames(rectify=True)
+        cv.waitKey(0)
 
 
 if __name__ == "__main__":
