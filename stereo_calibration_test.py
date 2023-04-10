@@ -5,6 +5,7 @@ sys.path.append("src")
 from src.stereo_vision.camera import *
 from src.camera_calibration.calibration import *
 from src.block_matching.blockmatchers import *
+from src.camera_calibration.ui_utils import *
 
 chessboard_path = "images/ps5_calib_2"
 photos_path = "images/ps5_calib_2"
@@ -23,7 +24,7 @@ def main():
     # stereo_calib = StereoCalibration(input_folder=config_dir("ps5_1_stereo"))
 
 
-    f_cam.img_names = f_cam.img_names[:10]
+    f_cam.img_names = f_cam.img_names[:5]
 
     # e_l, calib_left = f_cam.calibrateSingle("left", chess_pattern, dir_name=config_dir("ps5_1_left"), show_results=False)
     # e_r, calib_right = f_cam.calibrateSingle("right", chess_pattern, dir_name=config_dir("ps5_1_right"), show_results=False)
@@ -36,9 +37,11 @@ def main():
 
     print(avg_error)
 
-    bm = BlockMatcher()
-
     f_cam.calibration = stereo_calib
+
+    bm = BlockMatcher()
+    tuner = BMTuner(bm, stereo_calib, f_cam.get_frames())
+
 
     for i in range(len(f_cam.img_names)):
         f_cam.img_pointer = i
