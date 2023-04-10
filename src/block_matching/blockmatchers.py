@@ -5,19 +5,19 @@ import cv2 as cv
 
 
 class BlockMatcher:
-    stereo_bm = None
-
-    _num_disp = 0
-    _block_size = 0
-    _prefilter_type = 0
-    _prefilter_size = 0
-    _prefilter_cap = 0
-    _texture_threshold = 0
-    _uniqueness_ratio = 0
-    _speckle_range = 0
-    _speckle_window_size = 0
-    _disp12_max_diff = 0
-    _min_disparity = 0
+    def __init__(self):
+        self.stereo_bm = cv.StereoBM_create()
+        self._num_disp = 1
+        self._block_size = 2
+        self._prefilter_type = 0
+        self._prefilter_size = 0
+        self._prefilter_cap = 0
+        self._texture_threshold = 0
+        self._uniqueness_ratio = 0
+        self._speckle_range = 0
+        self._speckle_window_size = 5
+        self._disp12_max_diff = 0
+        self._min_disparity = 0
 
     parameter_maxima = {
         "num_disp": 50,
@@ -28,13 +28,11 @@ class BlockMatcher:
         "texture_threshold": 50,
         "uniqueness_ratio": 50,
         # 'speckle_range': 50,
-        # 'speckle_window_size': 50,
+        'speckle_window_size': 255,
         # 'disp12_max_diff': 25,
         # 'min_disparity': 25,
     }
 
-    def __init__(self):
-        self.stereo_bm = cv.StereoBM_create()
 
     @property
     def num_disp(self):
@@ -185,6 +183,7 @@ class BlockMatcher:
         First, convert images to grayscale if needed. Then pass to the
         ``_block_matcher`` for stereo matching.
         """
+        print(pair[0].shape)
         gray = []
         if pair[0].ndim == 3:
             for side in pair:
@@ -194,7 +193,7 @@ class BlockMatcher:
 
         # disp = self.stereo_bm.compute(gray[0], gray[1])
         # norm_coeff = 255 / disp.max()
-
+        print(gray[0].shape)
         return self.stereo_bm.compute(gray[0], gray[1])
         # return disp * norm_coeff / 255
 
