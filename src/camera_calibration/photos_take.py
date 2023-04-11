@@ -1,4 +1,5 @@
 import os
+
 import cv2 as cv
 
 from camera_calibration.calibration import ChessboardFinder
@@ -18,7 +19,7 @@ class CameraChessboardSaver(StereoCam, ChessboardFinder):
 
     def show_videos(self):
         c = 9
-        while True:            
+        while True:
             key = cv.waitKey(1)
 
             frame = self.get_raw_frame()

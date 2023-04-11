@@ -1,8 +1,6 @@
 import enum
-from glob import glob
-from itertools import cycle
-from pathlib import Path
 import os
+from glob import glob
 
 import cv2 as cv
 
@@ -177,7 +175,7 @@ class File_Cam(StereoCam):
 
         self._frame_size = frame_sizes[0]
 
-        self._delemiter = frame_sizes[0][1]//2
+        self._delemiter = frame_sizes[0][1] // 2
 
         self.calibration = calibration
         self.block_matcher = block_matcher
@@ -196,9 +194,9 @@ class File_Cam(StereoCam):
 
     def get_frames(self, rectify=False):
         frame = self.get_raw_frame()
-        
+
         frames = [frame[:, : self._delemiter, :], frame[:, self._delemiter :, :]]
-        
+
         if rectify and self.calibration is not None:
             frames = self.calibration.rectify(frames)
 
@@ -228,15 +226,15 @@ class File_Cam(StereoCam):
                 indexes_removing.append(i)
                 # self.show_frames()
                 # if frame.ndim == 3:
-                    # frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+                # frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
                 # cv.imshow(side, frame)
                 # cv.waitKey(0)
             else:
                 print(f"{i}: {self.img_names[i]} - have found board!")
-        
+
         for index in indexes_removing:
             os.remove(self.img_names[index])
-        
+
         calibration = calibrator.calibrate_camera()
         avg_error = calibration.rmse
 
@@ -244,7 +242,9 @@ class File_Cam(StereoCam):
         calibration.export(dir_name)
         return avg_error, calibration
 
-    def calibrateStereo(self, chess_pattern, dir_name, single_calibrations, show_results=False):
+    def calibrateStereo(
+        self, chess_pattern, dir_name, single_calibrations, show_results=False
+    ):
         single_frame_size = [self._delemiter, self.frame_size[0]]
         calibrator = StereoCalibrator(
             rows=chess_pattern[0][0],
@@ -279,7 +279,7 @@ class PS5CameraModes(enum.Enum):
     fhd: ((1920, 1080), 30),
     hd: ((1280, 800), 60),
     2k: ((2560, 800), 60),
-    default: ((1280, 376), 120)
+    default: ((1280, 376), 120).
     """
 
     fhd = ((1920, 1080), 30)
@@ -290,7 +290,7 @@ class PS5CameraModes(enum.Enum):
 
 class WebCameraModes(enum.Enum):
     """Supported modes for Thinkpad x230t integrated camera
-    default: ((640, 480), 30)
+    default: ((640, 480), 30).
     """
 
     default = ((640, 480), 30)

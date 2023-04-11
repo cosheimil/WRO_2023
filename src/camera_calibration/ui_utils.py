@@ -1,6 +1,7 @@
 from functools import partial
 
 import cv2 as cv
+
 from src.camera_calibration.calibration import *
 
 # from progressbar import ProgressBar, Percentage, Bar
@@ -39,7 +40,7 @@ class BMTuner(object):
             maximum = self.block_matcher.parameter_maxima[parameter]
             cv.createTrackbar(
                 parameter,
-                self.window_name,
+                self.trackbar_window_name,
                 self.block_matcher.__getattribute__(parameter),
                 maximum,
                 partial(self._set_value, parameter),
@@ -70,9 +71,11 @@ class BMTuner(object):
         self.shortest_dimension = min(self.pair[0].shape[:2])
         #: Settings chosen for ``BlockMatcher``
         self.bm_settings = {}
+        self.trackbar_window_name = 'Track Bars'
+        
         for parameter in self.block_matcher.parameter_maxima.keys():
             self.bm_settings[parameter] = []
-        cv.namedWindow(self.window_name)
+        cv.namedWindow(self.trackbar_window_name)
         self._initialize_trackbars()
         self.tune_pair(image_pair)
 
@@ -84,9 +87,17 @@ class BMTuner(object):
         255, because OpenCV multiplies it by 255 when displaying. This is
         because the pixels are stored as floating points.
         """
-        disparity = self.block_matcher.get_disparity(self.pair)
-        norm_coeff = 255 / disparity.max()
-        cv.imshow(self.window_name, disparity * norm_coeff / 255)
+        left_disp = self.block_matcher.get_disparity(self.pair, norm_flag=True)
+        right_bm = cv.ximgproc.createRightMatcher(self.block_matcher.stereo_bm)
+        right_disp = right_bm.compute(cv.cvtColor(self.pair[1], cv.COLOR_BGR2GRAY), cv.cvtColor(self.pair[0], cv.COLOR_BGR2GRAY))
+        wls_filter = cv.ximgproc.createDisparityWLSFilter(self.block_matcher.stereo_bm)
+        sigma = 1
+        lmbda = 10_000.0
+        wls_filter.setLambda(lmbda)
+        wls_filter.setSigmaColor(sigma)
+        filtered_disp = wls_filter.filter(left_disp, self.pair[0], disparity_map_right=right_disp)
+        cv.imshow(self.window_name, filtered_disp)
+        # cv.imshow('colored', colored_image)
         # cv.waitKey()
 
     def tune_pair(self, pair):

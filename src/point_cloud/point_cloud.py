@@ -37,7 +37,7 @@ end_header
             np.savetxt(outfile, points, "%f %f %f %d %d %d")
 
     def filter_infinity(self):
-        """Filter infinite distances from ``PointCloud.``"""
+        """Filter infinite distances from ``PointCloud.``."""
         mask = self.coordinates[:, 2] > self.coordinates[:, 2].min()
         coords = self.coordinates[mask]
         colors = self.colors[mask]

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import cv2 as cv
-
+import numpy as np
 
 class BlockMatcher:
     def __init__(self):
@@ -15,7 +15,7 @@ class BlockMatcher:
         self._texture_threshold = 0
         self._uniqueness_ratio = 0
         self._speckle_range = 0
-        self._speckle_window_size = 5
+        self._speckle_window_size = 0
         self._disp12_max_diff = 0
         self._min_disparity = 0
 
@@ -27,12 +27,11 @@ class BlockMatcher:
         "prefilter_cap": 62,
         "texture_threshold": 50,
         "uniqueness_ratio": 50,
-        # 'speckle_range': 50,
-        'speckle_window_size': 255,
-        # 'disp12_max_diff': 25,
-        # 'min_disparity': 25,
+        'speckle_range': 50,
+        "speckle_window_size": 255,
+        'disp12_max_diff': 25,
+        'min_disparity': 25,
     }
-
 
     @property
     def num_disp(self):
@@ -155,17 +154,17 @@ class BlockMatcher:
         with open(Path(dir_name) / f"./{file_name}.json", "r") as params:
             data = json.loads(json.load(params))
             (
-                self.num_disp_start,
-                self.block_size_start,
-                self.prefilter_type_start,
-                self.prefilter_size_start,
-                self.prefilter_cap_start,
-                self.texture_threshold_start,
-                self.uniqueness_ratio_start,
-                self.speckle_range_start,
-                self.speckle_window_size_start,
-                self.disp12_max_diff_start,
-                self.min_disparity_start,
+                self.num_disp,
+                self.block_size,
+                self.prefilter_type,
+                self.prefilter_size,
+                self.prefilter_cap,
+                self.texture_threshold,
+                self.uniqueness_ratio,
+                self.speckle_range,
+                self.speckle_window_size,
+                self.disp12_max_diff,
+                self.min_disparity,
             ) = data.values()
 
     @classmethod
@@ -173,7 +172,7 @@ class BlockMatcher:
         """Compute point cloud."""
         return cv.reprojectImageTo3D(disparity, disparity_to_depth_map)
 
-    def get_disparity(self, pair):
+    def get_disparity(self, pair, norm_flag=False):
         """
         Compute disparity from image pair (left, right).
 
@@ -187,10 +186,12 @@ class BlockMatcher:
         else:
             gray = pair
 
-        # disp = self.stereo_bm.compute(gray[0], gray[1])
-        # norm_coeff = 255 / disp.max()
-        return self.stereo_bm.compute(gray[0], gray[1])
-        # return disp * norm_coeff / 255
+        disp = self.stereo_bm.compute(gray[0], gray[1])
+        if norm_flag:
+            norm_coeff = 255 / disp.max()
+            return np.array(disp * norm_coeff / 255, dtype=np.float32)
+        return disp
+        # return self.stereo_bm.compute(gray[0], gray[1])
 
 
 class BadBlockMatcherArgumentError(Exception):

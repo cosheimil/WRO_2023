@@ -1,11 +1,9 @@
 import json
-import time
 from glob import glob
 from itertools import cycle
 from pathlib import Path
 
 import cv2 as cv
-import matplotlib.pyplot as plt
 import numpy as np
 from stereo_camera import PS5_Cam
 
@@ -199,7 +197,7 @@ def main():
 
         z_values = points[:, :, 2]
         z_values = z_values.flatten()
-        indices = z_values.argsort()
+        z_values.argsort()
 
         # visualize
         cv.imshow("depth", disp_Color)

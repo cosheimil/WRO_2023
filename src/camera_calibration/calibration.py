@@ -25,7 +25,7 @@ class ChessboardFinder(object):
     def _show_corners(self, image, window_name="Chessboard"):
         """Show chessboard corners found in image."""
         temp = image
-        
+
         corners = self._get_corners(image)
         cv.drawChessboardCorners(temp, (self.rows, self.columns), corners, True)
         cv.imshow(window_name, temp)
@@ -77,7 +77,7 @@ class Calibration(object):
 
     def export(self, output_folder):
         """Export matrices as ``*.npy`` files to an output folder."""
-        print(f'Saving: {output_folder}')
+        print(f"Saving: {output_folder}")
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         self._interact_with_folder(output_folder, "w")
@@ -204,7 +204,7 @@ class StereoCalibration(Calibration):
         Remapping is done with nearest neighbor for speed.
         """
         new_frames = []
-        
+
         for i, side in enumerate(("left", "right")):
             new_frames.append(
                 cv.remap(
@@ -214,10 +214,12 @@ class StereoCalibration(Calibration):
                     interpolation=cv.INTER_NEAREST,
                 )
             )
-            print(self.undistortion_map[side].shape,
-                    self.rectification_map[side].shape,
-                    frames[i].shape,
-                    new_frames[i].shape)
+            print(
+                self.undistortion_map[side].shape,
+                self.rectification_map[side].shape,
+                frames[i].shape,
+                new_frames[i].shape,
+            )
         return new_frames
 
 
@@ -246,7 +248,7 @@ class StereoCalibrator(ChessboardFinder):
                 self._show_corners(image, corners)
 
             corners_dict[side] = corners.reshape(-1, 2)
-            
+
             side = "right"
 
         for side in ["left", "right"]:
@@ -320,9 +322,11 @@ class StereoCalibrator(ChessboardFinder):
         stereo_rectify_flags = 0
         # stereo_rectify_flags = cv.CALIB_ZERO_DISPARITY
 
-        print( len(self.object_points),
+        print(
+            len(self.object_points),
             len(self.image_points["left"]),
-            len(self.image_points["right"]))
+            len(self.image_points["right"]),
+        )
         (
             calib.rmse,
             calib.cam_mats["left"],

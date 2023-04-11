@@ -1,5 +1,4 @@
 import cv2 as cv
-import numpy as np
 
 # from matplotlib import pyplot as plt
 
@@ -76,22 +75,22 @@ def main():
             shutil.rmtree(
                 Path(
                     Path(__file__).parent.parent.parent
-                    / f"./jacinto_ros_perception/img/imageL"
+                    / "./jacinto_ros_perception/img/imageL"
                 )
             )
             shutil.rmtree(
                 Path(
                     Path(__file__).parent.parent.parent
-                    / f"./jacinto_ros_perception/img/imageR"
+                    / "./jacinto_ros_perception/img/imageR"
                 )
             )
             Path(
                 Path(__file__).parent.parent.parent
-                / f"./jacinto_ros_perception/img/imageL"
+                / "./jacinto_ros_perception/img/imageL"
             ).mkdir()
             Path(
                 Path(__file__).parent.parent.parent
-                / f"./jacinto_ros_perception/img/imageR"
+                / "./jacinto_ros_perception/img/imageR"
             ).mkdir()
             c += 1
 

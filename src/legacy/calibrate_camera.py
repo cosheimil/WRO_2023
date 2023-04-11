@@ -2,7 +2,6 @@ import glob
 
 import cv2 as cv
 import numpy as np
-from stereo_camera import PS5_Cam
 
 
 def calibrate_chessboard(dir_path, image_format, square_size, width, height):
