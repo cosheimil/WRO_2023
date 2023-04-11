@@ -1,1 +1,1 @@
-"{\"Number Disparity\": 1, \"Block Size\": 3, \"Prefilter Type\": 0, \"Prefilter Size\": 1, \"Prefilter Cap\": 1, \"Texture Threshold\": 1, \"Uniqueness Ratio\": 1, \"Speckle Range\": 0, \"Speckle Window Size\": 0, \"Disp12 Max Difference\": 1, \"Min Disparity\": 2}"
+"{\"Number Disparity\": 6, \"Block Size\": 4, \"Prefilter Type\": 0, \"Prefilter Size\": 0, \"Prefilter Cap\": 1, \"Texture Threshold\": 0, \"Uniqueness Ratio\": 0, \"Speckle Range\": 0, \"Speckle Window Size\": 5, \"Disp12 Max Difference\": 0, \"Min Disparity\": 1}"

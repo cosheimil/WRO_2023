@@ -152,24 +152,21 @@ class BlockMatcher:
             json.dump(json.dumps(data), out)
 
     def load_from_json(self, dir_name, file_name):
-        try:
-            with open(Path(dir_name) / f"./{file_name}.json", "r") as params:
-                data = json.load(params)
-                (
-                    self.num_disp_start,
-                    self.block_size_start,
-                    self.prefilter_type_start,
-                    self.prefilter_size_start,
-                    self.prefilter_cap_start,
-                    self.texture_threshold_start,
-                    self.uniqueness_ratio_start,
-                    self.speckle_range_start,
-                    self.speckle_window_size_start,
-                    self.disp12_max_diff_start,
-                    self.min_disparity_start,
-                ) = data.values()
-        except:
-            return
+        with open(Path(dir_name) / f"./{file_name}.json", "r") as params:
+            data = json.loads(json.load(params))
+            (
+                self.num_disp_start,
+                self.block_size_start,
+                self.prefilter_type_start,
+                self.prefilter_size_start,
+                self.prefilter_cap_start,
+                self.texture_threshold_start,
+                self.uniqueness_ratio_start,
+                self.speckle_range_start,
+                self.speckle_window_size_start,
+                self.disp12_max_diff_start,
+                self.min_disparity_start,
+            ) = data.values()
 
     @classmethod
     def get_3d(cls, disparity, disparity_to_depth_map):
@@ -183,7 +180,6 @@ class BlockMatcher:
         First, convert images to grayscale if needed. Then pass to the
         ``_block_matcher`` for stereo matching.
         """
-        print(pair[0].shape)
         gray = []
         if pair[0].ndim == 3:
             for side in pair:
@@ -193,7 +189,6 @@ class BlockMatcher:
 
         # disp = self.stereo_bm.compute(gray[0], gray[1])
         # norm_coeff = 255 / disp.max()
-        print(gray[0].shape)
         return self.stereo_bm.compute(gray[0], gray[1])
         # return disp * norm_coeff / 255
 

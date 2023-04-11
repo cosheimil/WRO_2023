@@ -1,4 +1,3 @@
-import os
 from functools import partial
 
 import cv2 as cv
@@ -65,7 +64,6 @@ class BMTuner(object):
         self.calibration = calibration
         #: (left, right) image pair to find disparity between
         self.pair = image_pair
-        print(len(self.pair))
         #: Block matcher to be tuned
         self.block_matcher = block_matcher
         #: Shortest dimension of image
@@ -95,7 +93,6 @@ class BMTuner(object):
         """Tune a pair of images."""
         self._save_bm_state()
         self.pair = pair
-        print(self.block_matcher.__dict__)
         while True:
             self.update_disparity_map()
             if cv.waitKey(1) == ord("a"):
