@@ -194,6 +194,17 @@ class BlockMatcher:
         # return self.stereo_bm.compute(gray[0], gray[1])
 
 
+    def filter_disparity(self, pair, norm_flag=False, sigma=1.5, lmbda = 8_000):
+        left_disp = self.get_disparity(pair, norm_flag)
+        right_bm = cv.ximgproc.createRightMatcher(self.stereo_bm)
+        right_disp = right_bm.compute(cv.cvtColor(pair[1], cv.COLOR_BGR2GRAY), cv.cvtColor(pair[0], cv.COLOR_BGR2GRAY))
+        wls_filter = cv.ximgproc.createDisparityWLSFilter(self.stereo_bm)
+        wls_filter.setLambda(lmbda)
+        wls_filter.setSigmaColor(sigma)
+        filtered_disp = wls_filter.filter(left_disp, pair[0], disparity_map_right=right_disp)
+        return filtered_disp
+
+
 class BadBlockMatcherArgumentError(Exception):
     """Bad argument supplied for a ``BlockMatcher``."""
 
