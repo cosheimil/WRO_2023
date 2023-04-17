@@ -4,6 +4,7 @@ from pathlib import Path
 import cv2 as cv
 import numpy as np
 
+
 class BlockMatcher:
     def __init__(self):
         self.stereo_bm = cv.StereoBM_create()
@@ -27,10 +28,10 @@ class BlockMatcher:
         "prefilter_cap": 62,
         "texture_threshold": 50,
         "uniqueness_ratio": 50,
-        'speckle_range': 50,
+        "speckle_range": 50,
         "speckle_window_size": 255,
-        'disp12_max_diff': 25,
-        'min_disparity': 25,
+        "disp12_max_diff": 25,
+        "min_disparity": 25,
     }
 
     @property
@@ -193,15 +194,19 @@ class BlockMatcher:
         return disp
         # return self.stereo_bm.compute(gray[0], gray[1])
 
-
-    def filter_disparity(self, pair, norm_flag=False, sigma=1.5, lmbda = 8_000):
+    def filter_disparity(self, pair, norm_flag=False, sigma=1.5, lmbda=8_000):
         left_disp = self.get_disparity(pair, norm_flag)
         right_bm = cv.ximgproc.createRightMatcher(self.stereo_bm)
-        right_disp = right_bm.compute(cv.cvtColor(pair[1], cv.COLOR_BGR2GRAY), cv.cvtColor(pair[0], cv.COLOR_BGR2GRAY))
+        right_disp = right_bm.compute(
+            cv.cvtColor(pair[1], cv.COLOR_BGR2GRAY),
+            cv.cvtColor(pair[0], cv.COLOR_BGR2GRAY),
+        )
         wls_filter = cv.ximgproc.createDisparityWLSFilter(self.stereo_bm)
         wls_filter.setLambda(lmbda)
         wls_filter.setSigmaColor(sigma)
-        filtered_disp = wls_filter.filter(left_disp, pair[0], disparity_map_right=right_disp)
+        filtered_disp = wls_filter.filter(
+            left_disp, pair[0], disparity_map_right=right_disp
+        )
         return filtered_disp
 
 

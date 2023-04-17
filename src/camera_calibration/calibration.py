@@ -104,7 +104,7 @@ class CameraCalibrator(ChessboardFinder):
         resized = image
         # img_size = img_size[::-1]
         # print(self.image_size, img_size)
-        
+
         # resized = cv.resize(image, img_size, interpolation=cv.INTER_LINEAR)
         try:
             corners = self._get_corners(resized)

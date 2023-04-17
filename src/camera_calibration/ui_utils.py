@@ -71,7 +71,7 @@ class BMTuner(object):
         self.shortest_dimension = min(self.pair[0].shape[:2])
         #: Settings chosen for ``BlockMatcher``
         self.bm_settings = {}
-        self.trackbar_window_name = 'Track Bars'
+        self.trackbar_window_name = "Track Bars"
 
         for parameter in self.block_matcher.parameter_maxima.keys():
             self.bm_settings[parameter] = []
