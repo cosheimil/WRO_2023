@@ -104,6 +104,7 @@ class CameraCalibrator(ChessboardFinder):
         resized = image
         # img_size = img_size[::-1]
         # print(self.image_size, img_size)
+        
         # resized = cv.resize(image, img_size, interpolation=cv.INTER_LINEAR)
         try:
             corners = self._get_corners(resized)
@@ -214,12 +215,12 @@ class StereoCalibration(Calibration):
                     interpolation=cv.INTER_NEAREST,
                 )
             )
-            print(
-                self.undistortion_map[side].shape,
-                self.rectification_map[side].shape,
-                frames[i].shape,
-                new_frames[i].shape,
-            )
+            # print(
+            #     self.undistortion_map[side].shape,
+            #     self.rectification_map[side].shape,
+            #     frames[i].shape,
+            #     new_frames[i].shape,
+            # )
         return new_frames
 
 
