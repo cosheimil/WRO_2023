@@ -47,13 +47,15 @@ def main():
     f_cam.calibration = stereo_calib
 
     bm = BlockMatcher()
+    print(id(bm))
     bm.load_from_json("src", "params")
     BMTuner(bm, stereo_calib, f_cam.get_frames(rectify=True))
     f_cam.block_matcher = bm
-    point_cloud = f_cam.get_point_cloud(f_cam.get_frames(rectify=True))
-    point_cloud.write_ply('point.ply')
-
     bm.save_to_json("src", "params")
+    cv.imshow('disp', bm.filter_disparity(f_cam.get_frames(rectify=True)))
+    cv.waitKey(0)
+    # point_cloud = f_cam.get_point_cloud(f_cam.get_frames(rectify=True))
+    # point_cloud.write_ply('point.ply')
 
     # for i in range(len(f_cam.img_names)):
     #     f_cam.img_pointer = i
