@@ -152,7 +152,7 @@ class StereoCam:
         if self.block_matcher is None:
             return
 
-        disparity = self.block_matcher.get_disparity(pair)
+        disparity = self.block_matcher.filter_disparity(pair)
         points = self.block_matcher.get_3d(
             disparity, self.calibration.disp_to_depth_mat
         )
