@@ -173,6 +173,9 @@ class BlockMatcher:
         """Compute point cloud."""
         return cv.reprojectImageTo3D(disparity, disparity_to_depth_map)
 
+    def get_depth(self, disparity):
+        return np.nan_to_num(10 * 1200 / disparity)
+
     def get_disparity(self, pair, norm_flag=False):
         """
         Compute disparity from image pair (left, right).

@@ -5,9 +5,10 @@ import time
 
 class AStar:
   def __init__(self):
-    self.bus = smbus.SMBus(1)
+    self.bus = smbus.SMBus(0)
+    self.address = 8
 
-  def read_unpack(self, address, size, format):
+  def read_unpack(self, size, format):
     # Ideally we could do this:
     #    byte_list = self.bus.read_i2c_block_data(20, address, size)
     # But the AVR's TWI module can't handle a quick write->read transition,
@@ -18,14 +19,14 @@ class AStar:
     # A delay of 0.0001 (100 us) after each write is enough to account
     # for the worst-case situation in our example code.
 
-    self.bus.write_byte(20, address)
+    self.bus.write_byte(20, self.address)
     time.sleep(0.0001)
     byte_list = [self.bus.read_byte(20) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
 
-  def write_pack(self, address, format, *data):
+  def write_pack(self, format, *data):
     data_array = list(struct.pack(format, *data))
-    self.bus.write_i2c_block_data(20, address, data_array)
+    self.bus.write_i2c_block_data(20, self.address, data_array)
     time.sleep(0.0001)
 
   def leds(self, red, yellow, green):
