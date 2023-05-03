@@ -165,11 +165,64 @@ class PS5Cam:
         """
         return cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    def filter_frame(self, image:np.ndarray ,type=cv.THRESH_BINARY):
-        ret, thresh = cv.threshold()
+    def filter_frame(self, min_: int, max_: int, image:np.ndarray, type_=cv.THRESH_BINARY):
+        """Calculate threshold to frame by standard algos
+
+        Args:
+            min_ (int): minimum pixel
+            max_ (int): maximum pixel
+            image (np.ndarray): image
+            type_ (filters from cv, optional): Can be:
+            - cv.THRESH_BINARY
+            - cv.THRESH_BINARY_INV
+            - cv.THRESH_TRUNC
+            - cv.THRESH_TOZERO
+            - cv.THRESH_TOZERO_INV
+            - Defaults to cv.THRESH_BINARY.
+
+        Raises:
+            ValueError: If cannot calculate thresh
+
+        Returns:
+            np.array: image
+        """
+        image = self.convert_to_grayscale(image)
+        ret, thresh = cv.threshold(image, min_, max_, type_)
+        if not ret:
+            raise ValueError("Cannot calculate threshold. Check types!")
+        return thresh
     
-    def filter_frame_adaptive(self):
-        ...
+    def filter_frame_adaptive(self, max_: int, image: np.ndarray, type_adaptive=cv.ADAPTIVE_THRESH_MEAN_C, \
+                              type_=cv.THRESH_BINARY, block_size=11, c=1):
+        """Calculate threshold to frame by standard algos
+
+        Args:
+            max_ (int): maximum pixel
+            image (np.ndarray): image
+            type_ (cv.THRESH_*, optional) Can be:
+            - cv.THRESH_BINARY
+            - cv.THRESH_BINARY_INV
+            - cv.THRESH_TRUNC
+            - cv.THRESH_TOZERO
+            - cv.THRESH_TOZERO_INV
+            - Defaults is cv.THRESH_BINARY.
+            type_adaptive(cv.ADAPTIVE_THRESH_*, optional) Can be:
+            - cv.ADAPTIVE_THRESH_MEAN_C
+            - cv.ADAPTIVE_THRESH_GAUSSIAN_C
+            - Defaults is cv.ADAPTIVE_THRESH_MEAN_C
+
+        Raises:
+            ValueError: If cannot calculate thresh
+
+        Returns:
+            np.array: image
+        """
+        if block_size % 2 == 0:
+            block_size += 1
+        
+        image = self.convert_to_grayscale(image)
+        thresh = cv.adaptiveThreshold(image, max, type_adaptive, type_, block_size, c)
+        return thresh
     
     def enhance_frame(self, frame: np.ndarray, contrast: float = 1.2):
         """Enhance frame by contrast
