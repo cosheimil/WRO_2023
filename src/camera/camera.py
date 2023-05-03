@@ -64,7 +64,7 @@ class PS5Cam:
         """
         self._fps = fps
         self.video_capture.set(cv.CAP_PROP_FPS, self._fps)
-    
+
     @property
     def get_mode(self):
         """Return mode of Video Capture
@@ -83,7 +83,7 @@ class PS5Cam:
         """
         self.fps = mode[1]
         self.frame_size = mode[0]
-    
+
     def get_raw_frame(self):
         ret, frame = self.video_capture.read()
         if not ret:
@@ -153,7 +153,7 @@ class PS5Cam:
             self.show_frames(wait=1)
             if cv.waitKey(1) & 0xFF == ord("q"):
                 break
-    
+
     def convert_to_grayscale(self, image: np.ndarray):
         """Convert image from RGB to GrayScale
 
@@ -191,7 +191,7 @@ class PS5Cam:
         if not ret:
             raise ValueError("Cannot calculate threshold. Check types!")
         return thresh
-    
+
     def filter_frame_adaptive(self, max_: int, image: np.ndarray, type_adaptive=cv.ADAPTIVE_THRESH_MEAN_C, \
                               type_=cv.THRESH_BINARY, block_size=11, c=1):
         """Calculate threshold to frame by standard algos
@@ -219,11 +219,11 @@ class PS5Cam:
         """
         if block_size % 2 == 0:
             block_size += 1
-        
+
         image = self.convert_to_grayscale(image)
         thresh = cv.adaptiveThreshold(image, max, type_adaptive, type_, block_size, c)
         return thresh
-    
+
     def enhance_frame(self, frame: np.ndarray, contrast: float = 1.2):
         """Enhance frame by contrast
 
