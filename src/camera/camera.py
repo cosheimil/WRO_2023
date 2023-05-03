@@ -87,14 +87,14 @@ class PS5Cam:
     def get_raw_frame(self):
         ret, frame = self.video_capture.read()
         if not ret:
-            return ValueError("Cannot open video capture")
+            raise ValueError("Cannot open video capture")
         return frame
 
     def get_raw_frame_gray(self):
         """Get glued frame with left and right eyes
 
         Returns:
-            np.array: image
+            np.ndarray: image
         """
         frame = self.get_raw_frame()
         return cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -104,7 +104,7 @@ class PS5Cam:
 
         Returns
         -------
-            frame_l, frame_r: np.array, np.array
+            frame_l, frame_r: np.ndarray, np.ndarray
         """
         frame = self.get_raw_frame()
         frames = [frame[:, : self._delimiter, :], frame[:, self._delimiter :, :]]
@@ -115,7 +115,7 @@ class PS5Cam:
 
         Returns
         -------
-            frame_l, frame_r: np.array, np.array
+            frame_l, frame_r: np.ndarray, np.ndarray
         """
         frame_l, frame_r = self.get_frames()
         if frame_l.ndim == 3:
@@ -154,22 +154,38 @@ class PS5Cam:
             if cv.waitKey(1) & 0xFF == ord("q"):
                 break
     
-    def convert_to_grayscale(self, image: np.array):
+    def convert_to_grayscale(self, image: np.ndarray):
         """Convert image from RGB to GrayScale
 
         Args:
-            image (np.array): any image but in 3 channels
+            image (np.ndarray): any image but in 3 channels
 
         Returns:
-            image (np.array): given image but in gray
+            image (np.ndarray): given image but in gray
         """
         return cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    def filter_frame(self):
-        ...
+    def filter_frame(self, image:np.ndarray ,type=cv.THRESH_BINARY):
+        ret, thresh = cv.threshold()
     
     def filter_frame_adaptive(self):
         ...
+    
+    def enhance_frame(self, frame: np.ndarray, contrast: float = 1.2):
+        """Enhance frame by contrast
+
+        Args:
+            frame (np.ndarray): image from one of the eyes
+            contrast (float, optional): Contrast constant. Defaults to 1.2.
+
+        Returns:
+            frame (np.ndarray): Enhanced frame
+        """
+        image_pil = Image.fromarray(frame)
+        enhanced_image = ImageEnhance.Contrast(image_pil).enhance(contrast)
+        enhanced = np.array(enhanced_image)
+        return enhanced
+
 
 class PS5CameraModes(enum.Enum):
     """Supported modes for PS5 camera:
