@@ -1,4 +1,7 @@
 import cv2 as cv
+import enum
+from PIL import Image, ImageEnhance
+import numpy as np
 
 class PS5Cam:
     _frame_size = ()
@@ -7,7 +10,13 @@ class PS5Cam:
 
     windows = ["{} camera".format(side) for side in ("Left", "Right")]
 
-    def __init__(self, mode: PS5CameraModes, video_capture: int = 2) -> None:
+    def __init__(self, mode, video_capture: int = 2) -> None:
+        """__init__
+
+        Args:
+            mode (PS5CameraModes): mode for camera capturing
+            video_capture (int, optional): /dev/video*. Defaults to 2.
+        """
         self.video_capture = cv.VideoCapture(video_capture, cv.CAP_V4L2)
         self.mode = mode
 
@@ -66,7 +75,7 @@ class PS5Cam:
         return (self._frame_size, self._fps)
 
     @get_mode.setter
-    def set_mode(self, mode: PS5CameraModes):
+    def set_mode(self, mode):
         """Set mode of Video Capture
 
         Args:
@@ -162,3 +171,15 @@ class PS5Cam:
     def filter_frame_adaptive(self):
         ...
 
+class PS5CameraModes(enum.Enum):
+    """Supported modes for PS5 camera:
+    fhd: ((1920, 1080), 30),
+    hd: ((1280, 800), 60),
+    2k: ((2560, 800), 60),
+    default: ((1280, 376), 120).
+    """
+
+    fhd = ((1920, 1080), 30)
+    hd = ((1280, 800), 60)
+    dci_2k = ((2560, 800), 60)
+    default = ((1280, 376), 120)
