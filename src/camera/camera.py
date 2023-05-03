@@ -2,7 +2,7 @@ import cv2 as cv
 
 class PS5Cam:
     _frame_size = ()
-    _delemiter = 0
+    _delimiter = 0
     _fps = 0
 
     windows = ["{} camera".format(side) for side in ("Left", "Right")]
@@ -34,7 +34,7 @@ class PS5Cam:
 
         self.video_capture.set(cv.CAP_PROP_FRAME_WIDTH, self._frame_size[0])
         self.video_capture.set(cv.CAP_PROP_FRAME_HEIGHT, self._frame_size[1])
-        self._delemiter = frame_size[0] // 2
+        self._delimiter = frame_size[0] // 2
 
     @property
     def get_fps(self):
@@ -98,7 +98,7 @@ class PS5Cam:
             frame_l, frame_r: np.array, np.array
         """
         frame = self.get_raw_frame()
-        frames = [frame[:, : self._delemiter, :], frame[:, self._delemiter :, :]]
+        frames = [frame[:, : self._delimiter, :], frame[:, self._delimiter :, :]]
         return frames
 
     def get_frames_gray(self):
@@ -149,10 +149,16 @@ class PS5Cam:
         """Convert image from RGB to GrayScale
 
         Args:
-            image (np.array): any image but in 3 chanells
+            image (np.array): any image but in 3 channels
 
         Returns:
-            iamge (np.array): given image but in gray
+            image (np.array): given image but in gray
         """
         return cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+
+    def filter_frame(self):
+        ...
+    
+    def filter_frame_adaptive(self):
+        ...
 
