@@ -1,7 +1,9 @@
-import cv2 as cv
 import enum
-from PIL import Image, ImageEnhance
+
+import cv2 as cv
 import numpy as np
+from PIL import Image, ImageEnhance
+
 
 class PS5Cam:
     _frame_size = ()
@@ -11,9 +13,10 @@ class PS5Cam:
     windows = ["{} camera".format(side) for side in ("Left", "Right")]
 
     def __init__(self, mode, video_capture: int = 2) -> None:
-        """__init__
+        """__init__.
 
         Args:
+        ----
             mode (PS5CameraModes): mode for camera capturing
             video_capture (int, optional): /dev/video*. Defaults to 2.
         """
@@ -25,18 +28,20 @@ class PS5Cam:
 
     @property
     def get_frame_size(self):
-        """Get frame size
+        """Get frame size.
 
-        Returns:
+        Returns
+        -------
             tuple: (width, height)
         """
         return self._frame_size
 
     @get_frame_size.setter
     def set_frame_size(self, frame_size: tuple(int, int)):
-        """Set Frame Size of video capture
+        """Set Frame Size of video capture.
 
         Args:
+        ----
             frame_size (int): (width, height)
         """
         self._frame_size = frame_size
@@ -47,9 +52,10 @@ class PS5Cam:
 
     @property
     def get_fps(self):
-        """Get fps
+        """Get fps.
 
-        Returns:
+        Returns
+        -------
             int: fraps per second of Video Capture
         """
         return self._fps
@@ -67,18 +73,20 @@ class PS5Cam:
 
     @property
     def get_mode(self):
-        """Return mode of Video Capture
+        """Return mode of Video Capture.
 
-        Returns:
+        Returns
+        -------
             ((int, int), int): ((width, height), fps)
         """
         return (self._frame_size, self._fps)
 
     @get_mode.setter
     def set_mode(self, mode):
-        """Set mode of Video Capture
+        """Set mode of Video Capture.
 
         Args:
+        ----
             mode (PS5CameraModes): mode of Video Capture by PS5CameraModes
         """
         self.fps = mode[1]
@@ -91,9 +99,10 @@ class PS5Cam:
         return frame
 
     def get_raw_frame_gray(self):
-        """Get glued frame with left and right eyes
+        """Get glued frame with left and right eyes.
 
-        Returns:
+        Returns
+        -------
             np.ndarray: image
         """
         frame = self.get_raw_frame()
@@ -147,7 +156,7 @@ class PS5Cam:
 
     def show_videos(self):
         """
-        Show video
+        Show video.
         """
         while True:
             self.show_frames(wait=1)
@@ -155,20 +164,25 @@ class PS5Cam:
                 break
 
     def convert_to_grayscale(self, image: np.ndarray):
-        """Convert image from RGB to GrayScale
+        """Convert image from RGB to GrayScale.
 
         Args:
+        ----
             image (np.ndarray): any image but in 3 channels
 
         Returns:
+        -------
             image (np.ndarray): given image but in gray
         """
         return cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    def filter_frame(self, min_: int, max_: int, image:np.ndarray, type_=cv.THRESH_BINARY):
-        """Calculate threshold to frame by standard algos
+    def filter_frame(
+        self, min_: int, max_: int, image: np.ndarray, type_=cv.THRESH_BINARY
+    ):
+        """Calculate threshold to frame by standard algos.
 
         Args:
+        ----
             min_ (int): minimum pixel
             max_ (int): maximum pixel
             image (np.ndarray): image
@@ -181,9 +195,11 @@ class PS5Cam:
             - Defaults to cv.THRESH_BINARY.
 
         Raises:
+        ------
             ValueError: If cannot calculate thresh
 
         Returns:
+        -------
             np.array: image
         """
         image = self.convert_to_grayscale(image)
@@ -192,11 +208,19 @@ class PS5Cam:
             raise ValueError("Cannot calculate threshold. Check types!")
         return thresh
 
-    def filter_frame_adaptive(self, max_: int, image: np.ndarray, type_adaptive=cv.ADAPTIVE_THRESH_MEAN_C, \
-                              type_=cv.THRESH_BINARY, block_size=11, c=1):
-        """Calculate threshold to frame by standard algos
+    def filter_frame_adaptive(
+        self,
+        max_: int,
+        image: np.ndarray,
+        type_adaptive=cv.ADAPTIVE_THRESH_MEAN_C,
+        type_=cv.THRESH_BINARY,
+        block_size=11,
+        c=1,
+    ):
+        """Calculate threshold to frame by standard algos.
 
         Args:
+        ----
             max_ (int): maximum pixel
             image (np.ndarray): image
             type_ (cv.THRESH_*, optional) Can be:
@@ -212,9 +236,11 @@ class PS5Cam:
             - Defaults is cv.ADAPTIVE_THRESH_MEAN_C
 
         Raises:
+        ------
             ValueError: If cannot calculate thresh
 
         Returns:
+        -------
             np.array: image
         """
         if block_size % 2 == 0:
@@ -225,13 +251,15 @@ class PS5Cam:
         return thresh
 
     def enhance_frame(self, frame: np.ndarray, contrast: float = 1.2):
-        """Enhance frame by contrast
+        """Enhance frame by contrast.
 
         Args:
+        ----
             frame (np.ndarray): image from one of the eyes
             contrast (float, optional): Contrast constant. Defaults to 1.2.
 
         Returns:
+        -------
             frame (np.ndarray): Enhanced frame
         """
         image_pil = Image.fromarray(frame)
