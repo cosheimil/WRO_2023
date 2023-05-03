@@ -7,11 +7,11 @@ class PS5Cam:
 
     windows = ["{} camera".format(side) for side in ("Left", "Right")]
 
-    def __init__(self, mode: str, video_capture: int = 2) -> None:
+    def __init__(self, mode: PS5CameraModes, video_capture: int = 2) -> None:
         self.video_capture = cv.VideoCapture(video_capture, cv.CAP_V4L2)
         self.mode = mode
 
-    def set_wb(self, temp=5200):
+    def set_wb(self, temp: int = 5200):
         self.video_capture.set(cv.CAP_PROP_WB_TEMPERATURE, temp)
 
     @property
@@ -24,7 +24,7 @@ class PS5Cam:
         return self._frame_size
 
     @get_frame_size.setter
-    def set_frame_size(self, frame_size):
+    def set_frame_size(self, frame_size: tuple(int, int)):
         """Set Frame Size of video capture
 
         Args:
@@ -66,7 +66,7 @@ class PS5Cam:
         return (self._frame_size, self._fps)
 
     @get_mode.setter
-    def set_mode(self, mode):
+    def set_mode(self, mode: PS5CameraModes):
         """Set mode of Video Capture
 
         Args:
@@ -116,17 +116,17 @@ class PS5Cam:
 
         return [frame_l, frame_r]
 
-    def show_frames(self, rectify=False, wait=0):
+    def show_frames(self, wait: int = 0):
         """
         Show current frames from cameras.
 
         ``wait`` is the wait interval in milliseconds before the window closes.
         """
-        for window, frame in zip(self.windows, self.get_frames(rectify)):
+        for window, frame in zip(self.windows, self.get_frames()):
             cv.imshow(window, frame)
         cv.waitKey(wait)
 
-    def show_frames_gray(self, wait=0):
+    def show_frames_gray(self, wait: int = 0):
         """
         Show current frames from cameras.
 
@@ -145,7 +145,7 @@ class PS5Cam:
             if cv.waitKey(1) & 0xFF == ord("q"):
                 break
     
-    def convert_to_grayscale(self, image):
+    def convert_to_grayscale(self, image: np.array):
         """Convert image from RGB to GrayScale
 
         Args:
