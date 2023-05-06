@@ -247,7 +247,7 @@ class PS5Cam:
             block_size += 1
 
         image = self.convert_to_grayscale(image)
-        thresh = cv.adaptiveThreshold(image, max, type_adaptive, type_, block_size, c)
+        thresh = cv.adaptiveThreshold(image, max_, type_adaptive, type_, block_size, c)
         return thresh
 
     def enhance_frame(self, frame: np.ndarray, contrast: float = 1.2):
