@@ -267,6 +267,42 @@ class PS5Cam:
         enhanced = np.array(enhanced_image)
         return enhanced
 
+    def get_contour(self, image, enhance=False):
+        """Get contour of image
+
+        Args:
+            image (np.ndarray): image from one of eye
+            enhance (bool, optional): Used if u wanna get contrast image. Defaults to False.
+
+        Returns:
+            contours (np.ndarray): contour of image
+        """
+        if enhance:
+            image = self.enhance_frame(image, contrast=1.2)
+        thresh = self.filter_frame(min_=120, max_=255, image=image)
+
+        contours, hierarchies = cv.findContours(
+            thresh, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+
+        return contours
+
+    def get_center_of_contour(self, contour):
+        """Get center of contour. If u pass image - ur fool
+
+        Args:
+            contour (nd.array): CONTOUR!!!
+
+        Returns:
+            coord (int, int): cx, cy of center contour
+        """
+        for i in contour:
+            M = cv.moments(i)
+            if M['m00'] != 0:
+                cx = int(M['m10']/M['m00'])
+                cy = int(M['m01']/M['m00'])
+
+        return (cx, cy)
+
 
 class PS5CameraModes(enum.Enum):
     """Supported modes for PS5 camera:
