@@ -177,7 +177,7 @@ class PS5Cam:
         return cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
     def filter_frame(
-        self, image: np.ndarray, min_: int, max_: int, type_=cv.THRESH_BINARY
+        self, image: np.ndarray, min_: int = 0, max_: int = 255, type_=cv.THRESH_BINARY
     ):
         """Calculate threshold to frame by standard algos.
 
@@ -211,7 +211,7 @@ class PS5Cam:
     def filter_frame_adaptive(
         self,
         image: np.ndarray,
-        max_: int,
+        max_: int = 255,
         type_adaptive=cv.ADAPTIVE_THRESH_MEAN_C,
         type_=cv.THRESH_BINARY,
         block_size=11,
